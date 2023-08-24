@@ -1,10 +1,13 @@
+from api import Surah
 import inquirer
 from inquirer.themes import BlueComposure
-from api import Surah
+from pyfiglet import Figlet
 from rich import box
 from rich.console import Console
 from rich.table import Table
 from os import system, name
+from functools import cached_property
+from shutil import get_terminal_size
 from typing import List, Dict
 
 
@@ -65,7 +68,7 @@ def main():
     kk = kata_kunci_namaLatin()
     for k, i in kk.items():
         if tt['pilih'] == i:
-            if i == "at-taubah".title():
+            if i == "at-taubah".title() or i == "al-fatihah".title():
                 data_ayat(k, pembuka=False)
             else:
                 data_ayat(k)
@@ -76,23 +79,35 @@ def bersihkan_layar():
     else:
         _ = system('clear')
 
-def menu():
-    acuan = True
-    print("Selamat datang di aplikasi Quran-Id")
-    while acuan:
-        bersihkan_layar()
-        main()
-        print()
-        cari_surah_lagi = input("Cari surah lainnya (Y/n) ")
-        if cari_surah_lagi == 'y' or cari_surah_lagi == 'Y':
-            pass
-        else:
-            acuan = False
+def judul(kalimat: str, tengah=True):
+    f = Figlet(font='slant', justify='center')
+    if tengah:
+        print(*[x.center(get_terminal_size().columns) for  x in f.renderText(kalimat).split('\n')], sep='\n')
+    else:
+        print(f.renderText(kalimat))
 
+class Main(object):
+    def __init__(self, acuan=True):
+        self.acuan = acuan
+
+    @cached_property
+    def menu(self):
+        while self.acuan:
+            bersihkan_layar()
+            judul("Al-Qur'an")
+            print('\n'*2)
+            main()
+            print()
+            cari_surah_lagi = input("Cari surah lainnya (Y/n) ")
+            if cari_surah_lagi == 'y' or cari_surah_lagi == 'Y':
+                pass
+            else:
+                self.acuan = False
 
 
 if __name__ == '__main__':
-    menu()
+    mm = Main()
+    mm.menu
     
     
 
